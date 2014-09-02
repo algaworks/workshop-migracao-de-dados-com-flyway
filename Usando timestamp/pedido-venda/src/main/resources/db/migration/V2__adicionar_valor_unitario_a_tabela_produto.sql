@@ -1,0 +1,1 @@
+alter table produto add column valor_unitario decimal(10,2) not null;

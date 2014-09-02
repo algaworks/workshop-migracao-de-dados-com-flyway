@@ -1,0 +1,37 @@
+<project name="migrations">
+  
+  <taskdef resource="net/sf/antcontrib/antlib.xml">
+    <classpath>
+      <pathelement location="/opt/antlib/antcontrib.jar"/>
+    </classpath>
+  </taskdef>
+
+  <target name="prefix-new-migrations">
+    <foreach target="rename-file" param="the-file">
+      <path>
+        <!-- The hardcoded directory containing the migrations -->
+        <fileset dir="./src/main/resources/db/migration" casesensitive="no" includes="*.sql">
+          <!-- Exclude any migration files which have already been prefixed -->
+          <not>
+            <filename regex="V\d+__.*" casesensitive="true" />
+          </not>
+        </fileset>
+      </path>
+    </foreach>
+  </target>
+  
+  <target name="rename-file">
+    <tstamp>
+      <format property="time.stamp" pattern="yyyyMMddHHmmssSSS" />
+    </tstamp>
+    <dirname property="dir.name" file="${the-file}" />
+    <basename property="file.name" file="${the-file}" />
+
+    <!-- Renames my_migration.sql to 20130704144750766__my_migration.sql -->
+    <move file="${the-file}" tofile="${dir.name}${file.separator}V${time.stamp}__${file.name}" />
+
+    <!-- Sleep to prevent prefix conflicts when renaming multiple files -->
+    <sleep seconds="1" />
+  </target>
+
+</project>
